@@ -1,0 +1,52 @@
+{
+  "app": {
+    "title": "Microfrontend Host App",
+    "description": "Vue 3 + Module Federation + Element Plus"
+  },
+  "nav": {
+    "home": "Home",
+    "remoteApps": "Remote Apps",
+    "settings": "Settings"
+  },
+  "home": {
+    "welcome": "Welcome to Microfrontend Host Application",
+    "projectInfo": "Project Information",
+    "techStack": "Tech Stack",
+    "features": "Features",
+    "feature1": {
+      "title": "Vue 3 Composition API",
+      "description": "Build modern applications using the latest Vue 3 Composition API"
+    },
+    "feature2": {
+      "title": "Module Federation",
+      "description": "Webpack 5's Module Federation for microfrontend architecture"
+    },
+    "feature3": {
+      "title": "Element Plus",
+      "description": "Enterprise-class UI components based on Vue 3"
+    },
+    "feature4": {
+      "title": "Dynamic Loading",
+      "description": "Support dynamic loading and unloading of microfrontend applications"
+    }
+  },
+  "remoteApps": {
+    "title": "Remote Apps Management",
+    "loadingArea": "Remote Apps Loading Area",
+    "loadingDescription": "Remote microfrontend applications will be loaded here",
+    "configDescription": "Please configure remotes in webpack.config.js to add microfrontend applications",
+    "noApps": "No remote applications",
+    "loadApp": "Load App",
+    "unloadApp": "Unload App"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  },
+  "footer": {
+    "copyright": "Microfrontend Host App | Vue 3 + Module Federation + Element Plus"
+  }
+}

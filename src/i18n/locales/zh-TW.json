@@ -1,0 +1,52 @@
+{
+  "app": {
+    "title": "微前端Host應用",
+    "description": "Vue 3 + Module Federation + Element Plus"
+  },
+  "nav": {
+    "home": "首頁",
+    "remoteApps": "微前端應用",
+    "settings": "設定"
+  },
+  "home": {
+    "welcome": "歡迎使用微前端Host應用",
+    "projectInfo": "專案資訊",
+    "techStack": "技術棧",
+    "features": "功能特色",
+    "feature1": {
+      "title": "Vue 3 Composition API",
+      "description": "使用最新的Vue 3 Composition API構建現代化應用"
+    },
+    "feature2": {
+      "title": "Module Federation",
+      "description": "Webpack 5的模組聯邦功能，實現微前端架構"
+    },
+    "feature3": {
+      "title": "Element Plus",
+      "description": "基於Vue 3的企業級UI組件庫"
+    },
+    "feature4": {
+      "title": "動態載入",
+      "description": "支援動態載入和卸載微前端應用"
+    }
+  },
+  "remoteApps": {
+    "title": "微前端應用管理",
+    "loadingArea": "微前端應用載入區域",
+    "loadingDescription": "這裡將會動態載入其他微前端應用",
+    "configDescription": "請在webpack.config.js中配置remotes來添加微前端應用",
+    "noApps": "暫無微前端應用",
+    "loadApp": "載入應用",
+    "unloadApp": "卸載應用"
+  },
+  "common": {
+    "loading": "載入中...",
+    "error": "錯誤",
+    "success": "成功",
+    "confirm": "確認",
+    "cancel": "取消"
+  },
+  "footer": {
+    "copyright": "微前端Host應用 | Vue 3 + Module Federation + Element Plus"
+  }
+}

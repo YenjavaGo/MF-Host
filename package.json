@@ -1,0 +1,39 @@
+{
+  "name": "mf-host",
+  "version": "1.0.0",
+  "description": "微前端Host專案 - Vue 3 + Webpack Module Federation + Element Plus",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack serve --mode development",
+    "build": "webpack --mode production",
+    "serve": "webpack serve --mode development --open"
+  },
+  "keywords": ["vue3", "webpack", "module-federation", "element-plus", "microfrontend"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "vue": "^3.4.0",
+    "vue-router": "^4.2.5",
+    "element-plus": "^2.4.4",
+    "@element-plus/icons-vue": "^2.3.1",
+    "vue-i18n": "^9.8.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.6",
+    "@babel/preset-env": "^7.23.6",
+    "@vue/compiler-sfc": "^3.4.0",
+    "babel-loader": "^9.1.3",
+    "css-loader": "^6.8.1",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.6.0",
+    "style-loader": "^3.3.3",
+    "vue-loader": "^17.4.2",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1",
+    "typescript": "^5.3.3",
+    "@types/node": "^20.10.5",
+    "ts-loader": "^9.5.1",
+    "fork-ts-checker-webpack-plugin": "^9.0.2"
+  }
+}
