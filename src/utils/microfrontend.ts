@@ -134,6 +134,20 @@ class MicrofrontendLoader {
   private async loadRemoteModule(url: string, module: string): Promise<any> {
     try {
       // 使用 Webpack 5 Module Federation 載入遠程模組
+      // 先嘗試直接通過 remote 名稱載入（推薦方式）
+      const remoteName = this.extractRemoteName(url)
+      
+      if (remoteName) {
+        try {
+          // 動態載入已配置的 remote 模組
+          const remoteModule = await import(/* webpackChunkName: "remote-[request]" */ `${remoteName}/${module.replace('./', '')}`)
+          return remoteModule
+        } catch (remoteError) {
+          console.warn(`無法通過 remote 名稱載入 ${remoteName}/${module}，嘗試直接載入`, remoteError)
+        }
+      }
+      
+      // 備用方案：直接載入 remoteEntry.js
       const container = await import(/* webpackIgnore: true */ url)
       await container.init(__webpack_share_scopes__.default)
       const factory = await container.get(module)
@@ -142,6 +156,24 @@ class MicrofrontendLoader {
       console.error('載入遠程模組失敗:', error)
       throw new Error(`無法載入遠程模組 ${module} from ${url}`)
     }
+  }
+
+  /**
+   * 從 URL 中提取 remote 名稱
+   * @param url 遠程地址
+   */
+  private extractRemoteName(url: string): string | null {
+    // 從 URL 中提取可能的 remote 名稱
+    // 例如：http://localhost:3001/remoteEntry.js -> 檢查是否為已知的 remote
+    const knownRemotes = ['workflow'] // 可以從 webpack 配置中動態獲取
+    
+    for (const remoteName of knownRemotes) {
+      if (url.includes('3001') && remoteName === 'workflow') {
+        return remoteName
+      }
+    }
+    
+    return null
   }
 
   /**

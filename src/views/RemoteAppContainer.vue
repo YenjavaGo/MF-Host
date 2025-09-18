@@ -95,14 +95,16 @@ const reloadApp = async () => {
   error.value = ''
   
   try {
-    // 模擬重新載入過程
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    // 使用微前端載入工具重新載入
+    const { microfrontendLoader } = await import('@/utils/microfrontend')
+    await microfrontendLoader.reloadApp(appName.value)
     
     appConfig.value.loaded = true
     ElMessage.success(`${appName.value} 重新載入成功`)
   } catch (err) {
     error.value = '載入失敗，請檢查應用配置'
-    ElMessage.error('重新載入失敗')
+    ElMessage.error(`重新載入失敗: ${err.message}`)
+    console.error('重新載入失敗:', err)
   } finally {
     loading.value = false
   }
@@ -113,24 +115,98 @@ const loadRemoteApp = async () => {
   error.value = ''
   
   try {
-    // 這裡應該實現實際的微前端載入邏輯
-    // 例如使用 webpack 的 import() 動態導入
-    console.log(`正在載入微前端應用: ${appName.value}`)
+    console.log(`🚀 正在載入微前端應用: ${appName.value}`)
     
-    // 模擬載入過程
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    // 取得容器元素
+    const container = document.getElementById(`remote-app-${appName.value}`)
+    if (!container) {
+      throw new Error('找不到應用容器')
+    }
     
-    // 模擬載入成功
-    appConfig.value.loaded = true
-    ElMessage.success(`${appName.value} 載入成功`)
+    let Component = null
+    let successMethod = ''
     
-    // 這裡可以實際載入微前端應用
-    // const remoteApp = await import(/* webpackIgnore: true */ appConfig.value.url)
-    // 然後將應用渲染到指定容器中
+    // 方法 1: 使用已驗證的 workingRemoteLoader
+    try {
+      console.log('🔄 方法 1: 使用 workingRemoteLoader')
+      const { workingRemoteLoader } = await import('@/utils/workingRemoteLoader')
+      const result = await workingRemoteLoader.smartLoad(appConfig.value.url)
+      
+      if (result.success && result.component) {
+        Component = result.component
+        successMethod = `workingRemoteLoader (${result.method})`
+        console.log(`✅ 方法 1 成功: ${successMethod}`)
+      }
+    } catch (error) {
+      console.log('❌ 方法 1 失敗:', error)
+    }
+    
+    // 方法 2: 使用 allLoadingMethods
+    if (!Component) {
+      try {
+        console.log('🔄 方法 2: 使用 allLoadingMethods')
+        const { allLoadingMethods } = await import('@/utils/allLoadingMethods')
+        const results = await allLoadingMethods.testAllMethods(appConfig.value.url)
+        
+        const successfulResult = results.find(r => r.success)
+        if (successfulResult && successfulResult.component) {
+          Component = successfulResult.component
+          successMethod = `allLoadingMethods (${successfulResult.method})`
+          console.log(`✅ 方法 2 成功: ${successMethod}`)
+        }
+      } catch (error) {
+        console.log('❌ 方法 2 失敗:', error)
+      }
+    }
+    
+    // 方法 3: 使用原始的 microfrontendLoader
+    if (!Component) {
+      try {
+        console.log('🔄 方法 3: 使用 microfrontendLoader')
+        const { microfrontendLoader } = await import('@/utils/microfrontend')
+        
+        await microfrontendLoader.loadApp({
+          name: appName.value,
+          url: appConfig.value.url,
+          module: appConfig.value.module,
+          onMount: (mountedApp) => {
+            console.log(`${appName.value} 掛載成功`, mountedApp)
+            appConfig.value.loaded = true
+          },
+          onError: (error) => {
+            console.error(`${appName.value} 載入錯誤`, error)
+            throw error
+          }
+        }, container)
+        
+        successMethod = 'microfrontendLoader'
+        console.log('✅ 方法 3 成功: microfrontendLoader')
+        
+        ElMessage.success(`${appName.value} 載入成功 (${successMethod})`)
+        return // microfrontendLoader 自己處理掛載
+        
+      } catch (error) {
+        console.log('❌ 方法 3 失敗:', error)
+      }
+    }
+    
+    // 檢查是否有成功的組件需要掛載
+    if (Component) {
+      const { createApp } = await import('vue')
+      const remoteApp = createApp(Component)
+      remoteApp.mount(container)
+      appConfig.value.loaded = true
+      
+      console.log(`🎉 ${appName.value} 載入成功，使用方法: ${successMethod}`)
+      ElMessage.success(`${appName.value} 載入成功 (${successMethod})`)
+    } else {
+      throw new Error(`所有載入方法都失敗了`)
+    }
     
   } catch (err) {
     error.value = `無法載入應用 ${appName.value}，請確認應用是否正在運行`
     console.error('載入微前端應用失敗:', err)
+    ElMessage.error(`載入失敗: ${err.message}`)
   } finally {
     loading.value = false
   }

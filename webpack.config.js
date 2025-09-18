@@ -3,10 +3,18 @@ const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPl
 const { VueLoaderPlugin } = require('vue-loader');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
+const webpack = require('webpack');
+
 module.exports = {
   mode: 'development',
   entry: './src/main.ts',
+  experiments: {
+    topLevelAwait: true
+  },
   target: 'web',
+  optimization: {
+    splitChunks: false
+  },
   devServer: {
     port: 3000,
     hot: true,
@@ -20,7 +28,8 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.vue', '.json'],
     alias: {
-      '@': require('path').resolve(__dirname, 'src')
+      '@': require('path').resolve(__dirname, 'src'),
+      'vue': 'vue/dist/vue.runtime.esm-bundler.js'
     }
   },
   module: {
@@ -69,17 +78,38 @@ module.exports = {
       name: 'mf_host',
       filename: 'remoteEntry.js',
       remotes: {
-        // 這裡可以添加遠程微前端應用
-        'mf_remote_app1': 'vueRemote@http://localhost:3001/remoteEntry.js',
-        // 'mf_remote_app2': 'mf_remote_app2@http://localhost:3002/remoteEntry.js'
+        'workflow': 'workflow@http://localhost:3001/remoteEntry.js'
       },
-      exposes: {
-        // Host可以暴露的組件或功能
-        './HostApp': './src/App.vue',
-        './Router': './src/router/index.ts',
-        './I18n': './src/i18n/index.ts'
-      },
-      shared: ['vue', 'vue-router', 'element-plus', 'vue-i18n']
+      shared: {
+        vue: { 
+          singleton: true, 
+          requiredVersion: '^3.5.21',
+          strictVersion: false,
+          eager: false
+        },
+        'vue-router': { 
+          singleton: true, 
+          requiredVersion: '^4.2.5',
+          eager: false
+        },
+        'element-plus': { 
+          singleton: true, 
+          requiredVersion: '^2.11.2',
+          strictVersion: false,
+          eager: false
+        },
+        'vue-i18n': { 
+          singleton: true, 
+          requiredVersion: '^9.8.0',
+          eager: false
+        }
+      }
+    }),
+    // 定義 Vue 功能標誌
+    new webpack.DefinePlugin({
+      __VUE_OPTIONS_API__: JSON.stringify(true),
+      __VUE_PROD_DEVTOOLS__: JSON.stringify(false),
+      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: JSON.stringify(false)
     }),
     new HtmlWebpackPlugin({
       template: './public/index.html',

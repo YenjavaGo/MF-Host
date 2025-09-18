@@ -22,6 +22,10 @@
               <el-icon><Connection /></el-icon>
               {{ $t('nav.remoteApps') }}
             </el-menu-item>
+            <el-menu-item index="/test-remote">
+              <el-icon><Monitor /></el-icon>
+              測試載入
+            </el-menu-item>
           </el-menu>
           
           <div class="header-tools">
@@ -80,7 +84,8 @@ import {
   Setting,
   ArrowDown,
   Moon,
-  Sunny
+  Sunny,
+  Monitor
 } from '@element-plus/icons-vue'
 
 const router = useRouter()

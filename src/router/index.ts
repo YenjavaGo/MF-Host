@@ -26,6 +26,14 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       title: '微前端應用'
     }
+  },
+  {
+    path: '/test-remote',
+    name: 'TestRemote',
+    component: () => import('@/views/TestRemote.vue'),
+    meta: {
+      title: '測試遠程載入'
+    }
   }
 ]
 

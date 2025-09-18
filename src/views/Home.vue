@@ -42,10 +42,10 @@
           
           <el-row :gutter="20">
             <el-col :span="8">
-              <el-statistic title="Vue版本" :value="vueVersion" />
+              <el-statistic title="Vue版本" :value="parseFloat(vueVersion)" :value-style="{ color: '#409eff' }" suffix="版本" />
             </el-col>
             <el-col :span="8">
-              <el-statistic title="Element Plus版本" value="2.4.4" />
+              <el-statistic title="Element Plus版本" :value="parseFloat(elementPlusVersion)" :value-style="{ color: '#67c23a' }" suffix="版本" />
             </el-col>
             <el-col :span="8">
               <el-statistic title="運行時間" :value="uptime" suffix="秒" />
@@ -75,6 +75,7 @@ interface Feature {
 }
 
 const vueVersion = ref(version)
+const elementPlusVersion = ref('2.4.4') // Element Plus 版本
 const uptime = ref(0)
 let timer: number | null = null
 
