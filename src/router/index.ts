@@ -20,19 +20,11 @@ const routes: Array<RouteRecordRaw> = [
     }
   },
   {
-    path: '/remote/:appName',
-    name: 'RemoteApp',
-    component: () => import('@/views/RemoteAppContainer.vue'),
+    path: '/ctbc-workflow',
+    name: 'CTBCWorkflow',
+    component: () => import('@/views/CTBCWorkflow.vue'),
     meta: {
-      title: '微前端應用'
-    }
-  },
-  {
-    path: '/test-remote',
-    name: 'TestRemote',
-    component: () => import('@/views/TestRemote.vue'),
-    meta: {
-      title: '測試遠程載入'
+      title: 'CTBC 工作流程管理系統'
     }
   }
 ]

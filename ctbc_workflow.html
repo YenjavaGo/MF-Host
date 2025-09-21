@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ctbc_workflow</title>
+<style>
+/* 完全修復版本的樣式 */
+* { 
+  font-family: "Noto Sans TC", PingFang, "微軟正黑體", sans-serif; 
+  box-sizing: border-box;
+}
+
+body, html { 
+  margin: 0; 
+  padding: 0; 
+  height: 100%;
+  overflow: hidden;
+}
+
+#main-container { 
+  height: 100vh; 
+  display: flex; 
+  flex-direction: column; 
+  position: relative;
+  background: linear-gradient(135deg, #e8f4fd 0%, #b3d9f2 50%, #87ceeb 100%);
+}
+
+#main-container #header-container { 
+  border-bottom: 2px solid rgb(240, 240, 240); 
+  height: 2.5rem; 
+  padding: 0.2rem 1rem; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  background-color: rgb(254, 254, 254); 
+  position: relative;
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+#main-container #header-container #system-label { 
+  position: absolute; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 1rem; 
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#main-container #header-container #system-label #system-name-ch,
+#main-container #header-container #system-label #system-name-en { 
+  color: rgb(0, 136, 145); 
+  font-size: 1.2rem; 
+  font-weight: 700; 
+}
+
+#main-container #header-container #header-left-block,
+#main-container #header-container #header-right-block { 
+  flex: 1; 
+}
+
+#main-container #header-container #header-right-block { 
+  display: flex; 
+  justify-content: flex-end; 
+  align-items: center; 
+}
+
+#main-container #header-container #header-right-block #login-user { 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 0.8rem; 
+  margin-right: 1rem; 
+  padding: 1px 1rem; 
+  border-radius: 10px; 
+  box-shadow: rgb(221, 221, 221) 2px 2px inset; 
+  background-color: rgb(249, 249, 249); 
+  color: gray; 
+  font-size: 0.8rem; 
+}
+
+#main-container #content-container { 
+  flex: 1; 
+  display: flex;
+  overflow: hidden;
+}
+
+#main-container #content-container #menu-container { 
+  width: 200px; 
+  overflow-y: auto; 
+  border-right: 1px solid rgb(240, 240, 240); 
+  background-color: rgba(255, 255, 255, 0.95);
+  flex-shrink: 0;
+  transition: width 0.3s;
+}
+
+#main-container #content-container #menu-container.collapsed {
+  width: 0;
+  overflow: hidden;
+}
+
+#main-container #content-container #func-tab { 
+  flex: 1;
+  overflow-y: auto; 
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* Element UI Menu 樣式 */
+.el-menu {
+  border: none;
+  background-color: transparent;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  width: 100%;
+}
+
+.el-menu--vertical {
+  border-right: none;
+}
+
+.el-sub-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  background: transparent;
+}
+
+.el-sub-menu__title {
+  height: 56px;
+  line-height: 56px;
+  padding: 0 20px;
+  cursor: pointer;
+  position: relative;
+  color: #303133;
+  outline: none;
+  border-bottom: 1px solid #e6e6e6;
+  font-size: 14px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.el-sub-menu__title:hover {
+  background-color: #ecf5ff;
+}
+
+.el-sub-menu.is-opened .el-sub-menu__title {
+  border-bottom-color: #409eff;
+}
+
+.el-sub-menu__icon-arrow {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s;
+  flex-shrink: 0;
+}
+
+.el-sub-menu.is-opened .el-sub-menu__icon-arrow {
+  transform: rotateZ(180deg);
+}
+
+.el-menu--inline {
+  background-color: #f5f7fa;
+  display: none;
+}
+
+.el-menu--inline.show {
+  display: block;
+}
+
+.el-menu-item {
+  height: 56px;
+  line-height: 56px;
+  padding: 0 45px;
+  cursor: pointer;
+  position: relative;
+  color: #606266;
+  outline: none;
+  font-size: 14px;
+  border-bottom: 1px solid #e6e6e6;
+  background: transparent;
+}
+
+.el-menu-item:hover {
+  background-color: #ecf5ff;
+  color: #409eff;
+}
+
+.el-menu-item.active {
+  color: #409eff;
+  background-color: #ecf5ff;
+}
+
+.el-menu-item-group {
+  margin: 0;
+  padding: 0;
+}
+
+.el-menu-item-group ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.el-menu-item-group__title {
+  padding: 7px 0 7px 20px;
+  line-height: normal;
+  font-size: 12px;
+  color: #909399;
+}
+
+/* Tabs 樣式 */
+.el-tabs {
+  position: relative;
+}
+
+.el-tabs__header {
+  padding: 0;
+  position: relative;
+  margin: 0;
+}
+
+.el-tabs__nav-wrap {
+  overflow: hidden;
+  margin-bottom: -1px;
+  position: relative;
+}
+
+.el-tabs__nav-scroll {
+  overflow: hidden;
+}
+
+.el-tabs__nav {
+  white-space: nowrap;
+  position: relative;
+  transition: transform 0.3s;
+  float: left;
+  z-index: 2;
+}
+
+.el-tabs--card .el-tabs__header {
+  border-bottom: 1px solid #e4e7ed;
+}
+
+.el-tabs--card .el-tabs__nav {
+  border: 1px solid #e4e7ed;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  box-sizing: border-box;
+}
+
+.el-tabs__content {
+  overflow: hidden;
+  position: relative;
+  margin-top: 0;
+}
+
+#main-container #content-container #func-tab { 
+  overflow: auto; 
+  background: rgba(255, 255, 255, 0.8);
+  position: relative;
+  z-index: 1;
+}
+
+#main-container #content-container #func-tab .el-tabs__content { 
+  height: 100%; 
+  overflow: auto; 
+  background: rgba(255, 255, 255, 0.5); 
+}
+
+/* 退出按鈕樣式 */
+.el-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 1;
+  height: 32px;
+  white-space: nowrap;
+  cursor: pointer;
+  color: #606266;
+  text-align: center;
+  box-sizing: border-box;
+  outline: none;
+  margin: 0;
+  font-weight: 500;
+  border: 1px solid #dcdfe6;
+  background: #fff;
+  padding: 8px 15px;
+  font-size: 14px;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.el-button--primary {
+  color: #fff;
+  background-color: #409eff;
+  border-color: #409eff;
+}
+
+.el-button.is-link {
+  border-color: transparent;
+  color: #409eff;
+  background: transparent;
+  padding: 2px;
+}
+
+.el-button:hover {
+  color: #409eff;
+  border-color: #c6e2ff;
+  background-color: #ecf5ff;
+}
+
+.el-button--primary:hover {
+  background: #66b1ff;
+  border-color: #66b1ff;
+  color: #fff;
+}
+</style>
+</head>
+<body>
+
+<div id="main-container">
+  <div id="header-container">
+    <div id="header-left-block">
+      <button type="button" class="el-button el-button--primary is-link" id="menu-toggle-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+        </svg>
+      </button>
+    </div>
+    <div id="system-label">
+      <div id="system-name-ch">智能管理平台</div>
+      <div id="system-name-en">AI Portal System</div>
+    </div>
+    <div id="header-right-block">
+      <div id="login-user">
+        <div id="login-username">Z000XXXXX</div>
+        <div id="login-name">李大樹</div>
+      </div>
+      <button type="button" class="el-button el-button--primary is-link">
+        <svg class="svg-inline--fa fa-right-from-bracket" width="16" height="16" viewBox="0 0 512 512">
+          <path fill="currentColor" d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="content-container">
+    <ul role="menubar" class="el-menu el-menu--vertical" id="menu-container">
+      
+      <!-- 信件管理介面 -->
+      <li class="el-sub-menu" role="menuitem">
+        <div class="el-sub-menu__title">
+          工作流程管理
+          <i class="el-icon el-sub-menu__icon-arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+              <path fill="currentColor" d="M831.872 340.864 512 652.672 192.128 340.864a30.592 30.592 0 0 0-42.752 0 29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728 30.592 30.592 0 0 0-42.752 0z"></path>
+            </svg>
+          </i>
+        </div>
+        <ul role="menu" class="el-menu el-menu--inline" style="display: none;">
+          <li class="el-menu-item-group">
+            <div class="el-menu-item-group__title"></div>
+            <ul>
+              <li class="el-menu-item" role="menuitem" data-tab="route">路由控制</li>
+              <li class="el-menu-item" role="menuitem" data-tab="workflow">工作流程管理</li>
+              <li class="el-menu-item" role="menuitem" data-tab="flow_list">工作流程列表</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <!-- AI助理 -->
+      <li class="el-sub-menu" role="menuitem">
+        <div class="el-sub-menu__title">
+          AI助理
+          <i class="el-icon el-sub-menu__icon-arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+              <path fill="currentColor" d="M831.872 340.864 512 652.672 192.128 340.864a30.592 30.592 0 0 0-42.752 0 29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728 30.592 30.592 0 0 0-42.752 0z"></path>
+            </svg>
+          </i>
+        </div>
+        <ul role="menu" class="el-menu el-menu--inline" style="display: none;">
+          <li class="el-menu-item-group">
+            <div class="el-menu-item-group__title"></div>
+            <ul>
+              <li class="el-menu-item" role="menuitem">文件管理</li>
+              <li class="el-menu-item" role="menuitem" style="color: #409eff;">流程管理</li>
+              <li class="el-menu-item" role="menuitem">編輯器測試</li>
+              <li class="el-menu-item" role="menuitem">參數設定</li>
+              <li class="el-menu-item" role="menuitem">評分結果查詢</li>
+              <li class="el-menu-item" role="menuitem">流程記錄查詢</li>
+              <li class="el-menu-item" role="menuitem">連結管理</li>
+              <li class="el-menu-item" role="menuitem">語意檢核設定</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <!-- ATM影像管理 -->
+      <li class="el-sub-menu is-opened" role="menuitem">
+        <div class="el-sub-menu__title">
+          ATM影像管理
+          <i class="el-icon el-sub-menu__icon-arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+              <path fill="currentColor" d="M831.872 340.864 512 652.672 192.128 340.864a30.592 30.592 0 0 0-42.752 0 29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728 30.592 30.592 0 0 0-42.752 0z"></path>
+            </svg>
+          </i>
+        </div>
+        <ul role="menu" class="el-menu el-menu--inline">
+          <li class="el-menu-item-group">
+            <div class="el-menu-item-group__title"></div>
+            <ul>
+              <li class="el-menu-item" role="menuitem">系統參數</li>
+              <li class="el-menu-item" role="menuitem">影片收檔紀錄</li>
+              <li class="el-menu-item" role="menuitem">保全影片處理結果</li>
+              <li class="el-menu-item" role="menuitem">檢調影片處理結果</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <!-- LLM -->
+      <li class="el-sub-menu" role="menuitem">
+        <div class="el-sub-menu__title">
+          LLM
+          <i class="el-icon el-sub-menu__icon-arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+              <path fill="currentColor" d="M831.872 340.864 512 652.672 192.128 340.864a30.592 30.592 0 0 0-42.752 0 29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728 30.592 30.592 0 0 0-42.752 0z"></path>
+            </svg>
+          </i>
+        </div>
+        <ul role="menu" class="el-menu el-menu--inline" style="display: none;">
+          <li class="el-menu-item-group">
+            <div class="el-menu-item-group__title"></div>
+            <ul>
+              <li class="el-menu-item" role="menuitem">Agent</li>
+              <li class="el-menu-item" role="menuitem">提示詞設定</li>
+              <li class="el-menu-item" role="menuitem">超參數設定</li>
+              <li class="el-menu-item" role="menuitem">LLM歷程</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <!-- ASR管理 -->
+      <li class="el-sub-menu" role="menuitem">
+        <div class="el-sub-menu__title">
+          ASR管理
+          <i class="el-icon el-sub-menu__icon-arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+              <path fill="currentColor" d="M831.872 340.864 512 652.672 192.128 340.864a30.592 30.592 0 0 0-42.752 0 29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728 30.592 30.592 0 0 0-42.752 0z"></path>
+            </svg>
+          </i>
+        </div>
+        <ul role="menu" class="el-menu el-menu--inline" style="display: none;">
+          <li class="el-menu-item-group">
+            <div class="el-menu-item-group__title"></div>
+            <ul>
+              <li class="el-menu-item" role="menuitem">ASR對話紀錄</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <!-- 排程管理 -->
+      <li class="el-sub-menu" role="menuitem">
+        <div class="el-sub-menu__title">
+          排程管理
+          <i class="el-icon el-sub-menu__icon-arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+              <path fill="currentColor" d="M831.872 340.864 512 652.672 192.128 340.864a30.592 30.592 0 0 0-42.752 0 29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728 30.592 30.592 0 0 0-42.752 0z"></path>
+            </svg>
+          </i>
+        </div>
+        <ul role="menu" class="el-menu el-menu--inline" style="display: none;">
+          <li class="el-menu-item-group">
+            <div class="el-menu-item-group__title"></div>
+            <ul>
+              <li class="el-menu-item" role="menuitem">排程設定</li>
+              <li class="el-menu-item" role="menuitem">排程歷程</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <!-- 其他 -->
+      <li class="el-sub-menu" role="menuitem">
+        <div class="el-sub-menu__title">
+          其他
+          <i class="el-icon el-sub-menu__icon-arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+              <path fill="currentColor" d="M831.872 340.864 512 652.672 192.128 340.864a30.592 30.592 0 0 0-42.752 0 29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728 30.592 30.592 0 0 0-42.752 0z"></path>
+            </svg>
+          </i>
+        </div>
+        <ul role="menu" class="el-menu el-menu--inline" style="display: none;">
+          <li class="el-menu-item-group">
+            <div class="el-menu-item-group__title"></div>
+            <ul>
+              <li class="el-menu-item" role="menuitem">系統參數管理</li>
+              <li class="el-menu-item" role="menuitem">功能選單管理</li>
+              <li class="el-menu-item" role="menuitem">功能權限管理</li>
+              <li class="el-menu-item" role="menuitem">可視權限管理</li>
+              <li class="el-menu-item" role="menuitem">操作歷程</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      
+    </ul>
+
+    <!-- 添加 tab 容器 -->
+    <div id="func-tab" class="el-tabs">
+      <div class="el-tabs__header">
+        <div class="el-tabs__nav-wrap">
+          <div class="el-tabs__nav-scroll">
+            <div class="el-tabs__nav" id="tab-nav">
+              <!-- Tab 標籤將由 JavaScript 動態生成 -->
+            </div>
+          </div>
+        </div>
+        <!-- 添加租戶下拉選單 -->
+        <div class="tenant-dropdown-container" id="tenant-dropdown" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); z-index: 1000; display: none;">
+          <select id="tenant-select" class="el-select" style="padding: 5px 10px; border-radius: 4px; border: 1px solid #dcdfe6;">
+            <option value="voice">語音客服</option>
+            <option value="text">文字客服</option>
+            <option value="collection">催收</option>
+            <option value="loan">貸款</option>
+          </select>
+        </div>
+      </div>
+      <div class="el-tabs__content" id="tab-content">
+        <!-- Tab 內容將由 JavaScript 動態生成 -->
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<script>
+// Element UI 菜單功能 - 修復版本
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('初始化菜單功能');
+  
+  // 菜單點擊功能
+  const subMenus = document.querySelectorAll('.el-sub-menu');
+  console.log('找到子菜單數量:', subMenus.length);
+  
+  subMenus.forEach((menu, index) => {
+    const title = menu.querySelector('.el-sub-menu__title');
+    const submenu = menu.querySelector('.el-menu--inline');
+    const arrow = menu.querySelector('.el-sub-menu__icon-arrow');
+    
+    if (title && submenu && arrow) {
+      console.log('設置菜單', index, '的事件');
+      
+      title.addEventListener('click', function(e) {
+        e.preventDefault();
+        console.log('點擊菜單:', index);
+        
+        if (menu.classList.contains('is-opened')) {
+          // 關閉菜單
+          menu.classList.remove('is-opened');
+          submenu.style.display = 'none';
+          submenu.classList.remove('show');
+          arrow.style.transform = 'none';
+          console.log('關閉菜單:', index);
+        } else {
+          // 關閉其他菜單
+          subMenus.forEach((otherMenu, otherIndex) => {
+            if (otherMenu !== menu && otherMenu.classList.contains('is-opened')) {
+              otherMenu.classList.remove('is-opened');
+              const otherSubmenu = otherMenu.querySelector('.el-menu--inline');
+              const otherArrow = otherMenu.querySelector('.el-sub-menu__icon-arrow');
+              if (otherSubmenu) {
+                otherSubmenu.style.display = 'none';
+                otherSubmenu.classList.remove('show');
+              }
+              if (otherArrow) {
+                otherArrow.style.transform = 'none';
+              }
+              console.log('關閉其他菜單:', otherIndex);
+            }
+          });
+          
+          // 開啟當前菜單
+          menu.classList.add('is-opened');
+          submenu.style.display = 'block';
+          submenu.classList.add('show');
+          arrow.style.transform = 'rotateZ(180deg)';
+          console.log('開啟菜單:', index);
+        }
+      });
+    }
+  });
+  
+  // Tab 管理功能
+  const tabNav = document.getElementById('tab-nav');
+  const tabContent = document.getElementById('tab-content');
+  const openedTabs = new Map(); // 用於存儲已打開的標籤頁
+  
+  // 打開新標籤頁的函數
+  function openTab(tabId, tabName, contentUrl) {
+    console.log('打開標籤頁:', tabId, tabName, contentUrl);
+    
+    // 如果標籤頁已經存在，則激活它
+    if (openedTabs.has(tabId)) {
+      activateTab(tabId);
+      return;
+    }
+    
+    // 創建新的標籤頁
+    const tabElement = document.createElement('div');
+    tabElement.className = 'el-tabs__item';
+    tabElement.setAttribute('data-tab-id', tabId);
+    tabElement.textContent = tabName;
+    tabElement.addEventListener('click', function() {
+      activateTab(tabId);
+    });
+    
+    // 添加關閉按鈕
+    const closeBtn = document.createElement('span');
+    closeBtn.className = 'el-tabs__close';
+    closeBtn.innerHTML = '×';
+    closeBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      closeTab(tabId);
+    });
+    tabElement.appendChild(closeBtn);
+    
+    // 添加到導航欄
+    tabNav.appendChild(tabElement);
+    
+    // 創建內容區域
+    const contentElement = document.createElement('div');
+    contentElement.className = 'el-tabs__pane';
+    contentElement.setAttribute('data-tab-id', tabId);
+    
+    // 創建 iframe 加載內容
+    const iframe = document.createElement('iframe');
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    iframe.src = contentUrl;
+    contentElement.appendChild(iframe);
+    
+    // 添加到內容區域
+    tabContent.appendChild(contentElement);
+    
+    // 存儲標籤頁信息
+    openedTabs.set(tabId, {
+      tab: tabElement,
+      content: contentElement,
+      name: tabName,
+      url: contentUrl
+    });
+    
+    // 激活新標籤頁
+    activateTab(tabId);
+    
+    // 顯示租戶下拉選單
+    document.getElementById('tenant-dropdown').style.display = 'block';
+  }
+  
+  // 激活標籤頁
+  function activateTab(tabId) {
+    console.log('激活標籤頁:', tabId);
+    
+    if (!openedTabs.has(tabId)) {
+      console.error('標籤頁不存在:', tabId);
+      return;
+    }
+    
+    // 取消所有標籤頁的激活狀態
+    openedTabs.forEach((tab, id) => {
+      tab.tab.classList.remove('is-active');
+      tab.content.style.display = 'none';
+    });
+    
+    // 激活當前標籤頁
+    const currentTab = openedTabs.get(tabId);
+    currentTab.tab.classList.add('is-active');
+    currentTab.content.style.display = 'block';
+  }
+  
+  // 關閉標籤頁
+  function closeTab(tabId) {
+    console.log('關閉標籤頁:', tabId);
+    
+    if (!openedTabs.has(tabId)) {
+      console.error('標籤頁不存在:', tabId);
+      return;
+    }
+    
+    const tab = openedTabs.get(tabId);
+    
+    // 移除 DOM 元素
+    tabNav.removeChild(tab.tab);
+    tabContent.removeChild(tab.content);
+    
+    // 從 Map 中移除
+    openedTabs.delete(tabId);
+    
+    // 如果還有其他標籤頁，激活最後一個
+    if (openedTabs.size > 0) {
+      const lastTabId = Array.from(openedTabs.keys()).pop();
+      activateTab(lastTabId);
+    } else {
+      // 如果沒有標籤頁了，隱藏租戶下拉選單
+      document.getElementById('tenant-dropdown').style.display = 'none';
+    }
+  }
+  
+  // 菜單項目點擊功能
+  const menuItems = document.querySelectorAll('.el-menu-item');
+  console.log('找到菜單項目數量:', menuItems.length);
+  
+  menuItems.forEach((item, index) => {
+    item.addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log('點擊菜單項目:', index, this.textContent);
+      
+      // 移除所有菜單項目的選中狀態
+      menuItems.forEach(otherItem => {
+        otherItem.classList.remove('active');
+      });
+      
+      // 設置當前項目為選中狀態
+      this.classList.add('active');
+      
+      // 處理特定菜單項的點擊事件
+      const tabId = this.getAttribute('data-tab');
+      if (tabId) {
+        const tabName = this.textContent.trim();
+        
+        // 根據 tabId 打開對應的頁面
+        if (tabId === 'route') {
+          openTab(tabId, tabName, 'route.html');
+        } else if (tabId === 'workflow') {
+          openTab(tabId, tabName, 'workflow.html');
+        } else if (tabId === 'flow_list') {
+          openTab(tabId, tabName, 'flow_list.html');
+        }
+      }
+    });
+  });
+  
+  // 初始化時設置第一個菜單展開
+  if (subMenus.length > 0) {
+    const firstMenu = subMenus[0];
+    const firstSubmenu = firstMenu.querySelector('.el-menu--inline');
+    const firstArrow = firstMenu.querySelector('.el-sub-menu__icon-arrow');
+    
+    if (firstSubmenu && firstArrow) {
+      firstMenu.classList.add('is-opened');
+      firstSubmenu.style.display = 'block';
+      firstSubmenu.classList.add('show');
+      firstArrow.style.transform = 'rotateZ(180deg)';
+      console.log('初始化開啟第一個菜單');
+    }
+  }
+
+  // 菜單收合功能
+  const menuToggleBtn = document.getElementById('menu-toggle-btn');
+  const menuContainer = document.getElementById('menu-container');
+
+  if (menuToggleBtn && menuContainer) {
+    menuToggleBtn.addEventListener('click', function() {
+      menuContainer.classList.toggle('collapsed');
+    });
+  }
+  
+  // 添加標籤頁樣式
+  const style = document.createElement('style');
+  style.textContent = `
+    .el-tabs__item {
+      padding: 0 20px;
+      height: 40px;
+      box-sizing: border-box;
+      line-height: 40px;
+      display: inline-block;
+      list-style: none;
+      font-size: 14px;
+      font-weight: 500;
+      color: #303133;
+      position: relative;
+      cursor: pointer;
+      border: 1px solid #e4e7ed;
+      border-bottom: none;
+      border-radius: 4px 4px 0 0;
+      background-color: #f5f7fa;
+      margin-right: 5px;
+    }
+    
+    .el-tabs__item.is-active {
+      color: #409eff;
+      background-color: #fff;
+      border-bottom-color: #fff;
+    }
+    
+    .el-tabs__close {
+      margin-left: 8px;
+      font-size: 16px;
+      line-height: 16px;
+      vertical-align: middle;
+      cursor: pointer;
+    }
+    
+    .el-tabs__close:hover {
+      color: #f56c6c;
+    }
+    
+    .el-tabs__pane {
+      display: none;
+      height: calc(100vh - 105px);
+      margin-top: 0;
+    }
+  `;
+  document.head.appendChild(style);
+});
+</script>
+
+</body>
+</html>

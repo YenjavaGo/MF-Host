@@ -22,9 +22,9 @@
               <el-icon><Connection /></el-icon>
               {{ $t('nav.remoteApps') }}
             </el-menu-item>
-            <el-menu-item index="/test-remote">
+            <el-menu-item index="/ctbc-workflow">
               <el-icon><Monitor /></el-icon>
-              測試載入
+              CTBC Workflow
             </el-menu-item>
           </el-menu>
           

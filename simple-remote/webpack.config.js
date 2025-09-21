@@ -3,9 +3,10 @@ const { VueLoaderPlugin } = require('vue-loader')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin')
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
+const webpack = require('webpack')
 
 module.exports = {
-  mode: 'production', // 直接設為 production 模式
+  mode: 'development', // 改為 development 模式以與 Host 保持一致
   entry: './src/main.ts',
   
   resolve: {
@@ -41,12 +42,19 @@ module.exports = {
   plugins: [
     new VueLoaderPlugin(),
     new ForkTsCheckerWebpackPlugin(),
+    // 定義 Vue 功能標誌（與 Host 保持一致）
+    new webpack.DefinePlugin({
+      __VUE_OPTIONS_API__: JSON.stringify(true),
+      __VUE_PROD_DEVTOOLS__: JSON.stringify(false),
+      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: JSON.stringify(false)
+    }),
     new ModuleFederationPlugin({
       name: 'workflow', // 與 Host 期望的名稱一致
       filename: 'remoteEntry.js',
       exposes: {
         './App': './src/App.vue',
         './FlowManager': './src/components/FlowManager.vue',
+        './FlowManagement': './src/components/FlowManager.vue', // 別名映射到 FlowManager
         './CustomNode': './src/components/CustomNode.vue'
       },
       shared: {
@@ -72,6 +80,7 @@ module.exports = {
   
   devServer: {
     port: 3001,
+    hot: true, // 添加熱更新支援
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Headers': '*',
@@ -82,5 +91,10 @@ module.exports = {
   // 確保 publicPath 設為 auto 以支援不同部署環境
   output: {
     publicPath: 'auto'
+  },
+  
+  // 添加優化配置確保樣式正確載入
+  optimization: {
+    splitChunks: false // 與 Host 保持一致
   }
 }

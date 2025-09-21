@@ -31,6 +31,38 @@
           </el-card>
         </div>
 
+        <!-- 快速入口 -->
+        <el-card class="quick-entry-card">
+          <template #header>
+            <div class="card-header">
+              <el-icon class="header-icon"><Compass /></el-icon>
+              <span>快速入口</span>
+            </div>
+          </template>
+          
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-card class="entry-card" shadow="hover" @click="goToRemoteApps">
+                <div class="entry-content">
+                  <el-icon class="entry-icon"><Connection /></el-icon>
+                  <h4>微前端應用管理</h4>
+                  <p>管理和載入微前端應用模組</p>
+                </div>
+              </el-card>
+            </el-col>
+            <el-col :span="12">
+              <el-card class="entry-card ctbc-entry" shadow="hover" @click="goToCTBCWorkflow">
+                <div class="entry-content">
+                  <el-icon class="entry-icon"><Monitor /></el-icon>
+                  <h4>CTBC 工作流程系統</h4>
+                  <p>中國信託工作流程管理系統</p>
+                  <el-tag type="success" size="small" class="entry-tag">推薦</el-tag>
+                </div>
+              </el-card>
+            </el-col>
+          </el-row>
+        </el-card>
+
         <!-- 系統狀態 -->
         <el-card class="status-card">
           <template #header>
@@ -59,13 +91,15 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { version } from 'vue'
 import { 
   Star, 
   Monitor, 
   Setting, 
   DataBoard,
-  Connection
+  Connection,
+  Compass
 } from '@element-plus/icons-vue'
 
 interface Feature {
@@ -74,10 +108,19 @@ interface Feature {
   iconClass: string
 }
 
+const router = useRouter()
 const vueVersion = ref(version)
 const elementPlusVersion = ref('2.4.4') // Element Plus 版本
 const uptime = ref(0)
 let timer: number | null = null
+
+const goToRemoteApps = () => {
+  router.push('/remote-apps')
+}
+
+const goToCTBCWorkflow = () => {
+  router.push('/ctbc-workflow')
+}
 
 const features: Feature[] = [
   {
@@ -199,6 +242,69 @@ onUnmounted(() => {
 
 .status-card {
   margin-top: 20px;
+}
+
+.quick-entry-card {
+  margin: 20px 0;
+}
+
+.entry-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  height: 120px;
+}
+
+.entry-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.ctbc-entry {
+  border: 2px solid #67c23a;
+}
+
+.ctbc-entry:hover {
+  border-color: #409eff;
+  box-shadow: 0 8px 25px rgba(64, 158, 255, 0.3);
+}
+
+.entry-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+  justify-content: center;
+  position: relative;
+}
+
+.entry-icon {
+  font-size: 32px;
+  color: #409eff;
+  margin-bottom: 8px;
+}
+
+.ctbc-entry .entry-icon {
+  color: #67c23a;
+}
+
+.entry-content h4 {
+  margin: 0 0 4px 0;
+  color: #303133;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.entry-content p {
+  margin: 0;
+  color: #909399;
+  font-size: 12px;
+}
+
+.entry-tag {
+  position: absolute;
+  top: 8px;
+  right: 8px;
 }
 
 /* 響應式設計 */

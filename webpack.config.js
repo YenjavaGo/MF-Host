@@ -90,6 +90,7 @@ module.exports = {
         'vue-router': { 
           singleton: true, 
           requiredVersion: '^4.2.5',
+          strictVersion: false,
           eager: false
         },
         'element-plus': { 
@@ -101,6 +102,7 @@ module.exports = {
         'vue-i18n': { 
           singleton: true, 
           requiredVersion: '^9.8.0',
+          strictVersion: false,
           eager: false
         }
       }
