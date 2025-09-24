@@ -178,20 +178,20 @@
               Agent
             </el-menu-item>
             <el-menu-item 
-              index="llm-prompt"
-              @click="() => loadRemoteApp('llm-prompt', '提示詞設定')"
+              index="llm-prompt-list"
+              @click="() => loadRemoteApp('llm-prompt-list', '提示詞設定')"
             >
               提示詞設定
             </el-menu-item>
             <el-menu-item 
-              index="llm-hyperparams"
-              @click="() => loadRemoteApp('llm-hyperparams', '超參數設定')"
+              index="llm-hyper-param"
+              @click="() => loadRemoteApp('llm-hyper-param', '超參數設定')"
             >
               超參數設定
             </el-menu-item>
             <el-menu-item 
-              index="llm-history"
-              @click="() => loadRemoteApp('llm-history', 'LLM歷程')"
+              index="llm-content-log"
+              @click="() => loadRemoteApp('llm-content-log', 'LLM歷程')"
             >
               LLM歷程
             </el-menu-item>
@@ -328,6 +328,23 @@ const remoteAppsConfig = reactive({
   'workflow-list': {
     remoteName: 'workflow',
     module: './CustomNode'
+  },
+  // LLM 相關模組 - 對應 webpack.config.js 中的 'llm_web' remote
+  'llm-agent': {
+    remoteName: 'llm_web',
+    module: './agent'
+  },
+  'llm-prompt-list': {
+    remoteName: 'llm_web',
+    module: './promptList'
+  },
+  'llm-content-log': {
+    remoteName: 'llm_web',
+    module: './contentLog'
+  },
+  'llm-hyper-param': {
+    remoteName: 'llm_web',
+    module: './hyperParam'
   }
   // 其他模組可以在這裡添加對應的 remote 配置
 })
@@ -428,11 +445,26 @@ const loadActualRemoteApp = async (remoteName: string, module: string, container
     // 等待一下確保容器清空
     await new Promise(resolve => setTimeout(resolve, 100))
     
+    // 根據 remoteName 選擇對應的 remoteEntry.js
+    const getRemoteEntryUrl = (name: string): string => {
+      switch (name) {
+        case 'workflow':
+          return 'http://localhost:3001/remoteEntry.js'
+        case 'llm_web':
+          return 'http://localhost:3003/llm_web/remoteEntry.js'
+        default:
+          throw new Error(`未知的 remote 應用: ${name}`)
+      }
+    }
+    
+    const remoteEntryUrl = getRemoteEntryUrl(remoteName)
+    console.log(`使用 remoteEntry URL: ${remoteEntryUrl}`)
+    
     // 使用 workingRemoteLoader 載入 remote 應用
     const { workingRemoteLoader } = await import('@/utils/workingRemoteLoader')
     
     // 載入特定模組
-    const Component = await workingRemoteLoader.loadModule(module, 'http://localhost:3001/remoteEntry.js')
+    const Component = await workingRemoteLoader.loadModule(module, remoteEntryUrl)
     
     if (!Component) {
       throw new Error(`無法從 ${remoteName}${module} 取得組件`)

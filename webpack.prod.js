@@ -2,38 +2,24 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin');
 const { VueLoaderPlugin } = require('vue-loader');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-
 const webpack = require('webpack');
 
-module.exports = (env, argv) => {
-  const isProduction = argv.mode === 'production'
-  
-  return {
-    mode: argv.mode || 'development',
-    entry: './src/main.ts',
-    experiments: {
-      topLevelAwait: true
-    },
-    target: 'web',
-    optimization: {
-      splitChunks: false
-    },
-    output: {
-      publicPath: isProduction ? 'auto' : 'http://localhost:3000/',
-      clean: true
-    },
-  devServer: {
-    port: 3000,
-    hot: true,
-    historyApiFallback: true,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-      'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization',
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0'
-    }
+module.exports = {
+  mode: 'production',
+  entry: './src/main.ts',
+  experiments: {
+    topLevelAwait: true
+  },
+  target: 'web',
+  optimization: {
+    splitChunks: false,
+    minimize: true
+  },
+  output: {
+    publicPath: 'auto',
+    clean: true,
+    filename: '[name].[contenthash].js',
+    chunkFilename: '[name].[contenthash].js'
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.vue', '.json'],
@@ -96,36 +82,36 @@ module.exports = (env, argv) => {
           singleton: true, 
           requiredVersion: '^3.0.0',
           strictVersion: false,
-          eager: isProduction
+          eager: true  // 生產環境使用 eager loading
         },
         'vue-router': { 
           singleton: true, 
           requiredVersion: '^4.2.5',
           strictVersion: false,
-          eager: isProduction
+          eager: true
         },
         'element-plus': { 
           singleton: true, 
           requiredVersion: '^2.11.2',
           strictVersion: false,
-          eager: isProduction
+          eager: true
         },
         'vue-i18n': { 
           singleton: true, 
           requiredVersion: '^9.8.0',
           strictVersion: false,
-          eager: isProduction
+          eager: true
         },
         'axios': {
           singleton: true,
           requiredVersion: '^1.2.2',
           strictVersion: false,
-          eager: isProduction
+          eager: true
         }
       }
     }),
-    // 定義 Vue 功能標誌
     new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('production'),
       __VUE_OPTIONS_API__: JSON.stringify(true),
       __VUE_PROD_DEVTOOLS__: JSON.stringify(false),
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: JSON.stringify(false)
@@ -133,8 +119,19 @@ module.exports = (env, argv) => {
     new HtmlWebpackPlugin({
       template: './public/index.html',
       inject: true,
-      title: '微前端Host應用 - Vue 3 + Module Federation + Element Plus'
+      title: '微前端Host應用 - Vue 3 + Module Federation + Element Plus',
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeRedundantAttributes: true,
+        useShortDoctype: true,
+        removeEmptyAttributes: true,
+        removeStyleLinkTypeAttributes: true,
+        keepClosingSlash: true,
+        minifyJS: true,
+        minifyCSS: true,
+        minifyURLs: true
+      }
     })
   ]
-  }
-}
+};
