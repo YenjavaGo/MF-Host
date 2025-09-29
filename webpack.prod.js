@@ -102,9 +102,9 @@ module.exports = {
           strictVersion: false,
           eager: true
         },
-        'axios': {
-          singleton: true,
-          requiredVersion: '^1.2.2',
+        '@vue-flow/core': { 
+          singleton: true, 
+          requiredVersion: '^1.46.5',
           strictVersion: false,
           eager: true
         }
