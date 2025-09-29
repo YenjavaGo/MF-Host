@@ -103,7 +103,7 @@
           <el-input v-model="newApp.description" placeholder="請輸入應用描述" />
         </el-form-item>
         <el-form-item label="遠程地址" required>
-          <el-input v-model="newApp.url" placeholder="http://localhost:3001/remoteEntry.js" />
+          <el-input v-model="newApp.url" placeholder="http://localhost:3001/workflow/remoteEntry.js" />
         </el-form-item>
         <el-form-item label="暴露模組">
           <el-input v-model="newApp.module" placeholder="./App" />
@@ -145,7 +145,7 @@ const remoteApps = ref<RemoteApp[]>([
   {
     name: 'workflow',
     description: 'Workflow 工作流程管理應用',
-    url: 'http://localhost:3001/remoteEntry.js',
+    url: 'http://localhost:3001/workflow/remoteEntry.js',
     module: './App',
     status: 'unloaded'
   }

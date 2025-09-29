@@ -88,7 +88,7 @@ module.exports = (env, argv) => {
       name: 'mf_host',
       filename: 'remoteEntry.js',
       remotes: {
-        'workflow': 'workflow@http://localhost:3001/remoteEntry.js',
+        'workflow': 'workflow@http://localhost:3001/workflow/remoteEntry.js',
         'llm_web': 'llm_web@http://localhost:3003/llm_web/remoteEntry.js'
       },
       shared: {
@@ -113,12 +113,6 @@ module.exports = (env, argv) => {
         'vue-i18n': { 
           singleton: true, 
           requiredVersion: '^9.8.0',
-          strictVersion: false,
-          eager: isProduction
-        },
-        '@vue-flow/core': { 
-          singleton: true, 
-          requiredVersion: '^1.46.5',
           strictVersion: false,
           eager: isProduction
         }

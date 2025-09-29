@@ -449,7 +449,7 @@ const loadActualRemoteApp = async (remoteName: string, module: string, container
     const getRemoteEntryUrl = (name: string): string => {
       switch (name) {
         case 'workflow':
-          return 'http://localhost:3001/remoteEntry.js'
+          return 'http://localhost:3001/workflow/remoteEntry.js'
         case 'llm_web':
           return 'http://localhost:3003/llm_web/remoteEntry.js'
         default:

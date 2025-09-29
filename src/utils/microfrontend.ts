@@ -164,7 +164,7 @@ class MicrofrontendLoader {
    */
   private extractRemoteName(url: string): string | null {
     // 從 URL 中提取可能的 remote 名稱
-    // 例如：http://localhost:3001/remoteEntry.js -> 檢查是否為已知的 remote
+    // 例如：http://localhost:3001/workflow/remoteEntry.js -> 檢查是否為已知的 remote
     const knownRemotes = ['workflow'] // 可以從 webpack 配置中動態獲取
     
     for (const remoteName of knownRemotes) {

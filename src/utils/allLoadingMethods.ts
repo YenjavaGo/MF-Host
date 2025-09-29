@@ -332,7 +332,7 @@ export class AllLoadingMethods {
   /**
    * 測試所有方法
    */
-  async testAllMethods(remoteUrl: string = 'http://localhost:3001/remoteEntry.js'): Promise<LoadMethodResult[]> {
+  async testAllMethods(remoteUrl: string = 'http://localhost:3001/workflow/remoteEntry.js'): Promise<LoadMethodResult[]> {
     console.log('🚀 開始測試所有載入方法...')
     
     const results: LoadMethodResult[] = []

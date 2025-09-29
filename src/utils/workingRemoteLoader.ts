@@ -15,7 +15,7 @@ export class WorkingRemoteLoader {
   /**
    * 使用 SystemJS 風格載入（已驗證有效）
    */
-  async loadWithSystemJS(remoteUrl: string = 'http://localhost:3001/remoteEntry.js'): Promise<WorkingLoadResult> {
+  async loadWithSystemJS(remoteUrl: string = 'http://localhost:3001/workflow/remoteEntry.js'): Promise<WorkingLoadResult> {
     console.log('🚀 使用 SystemJS 風格載入 Remote（已驗證方法）')
     
     try {
@@ -96,7 +96,7 @@ export class WorkingRemoteLoader {
   /**
    * 備用方法：直接 fetch + eval
    */
-  async loadWithFetchEval(remoteUrl: string = 'http://localhost:3001/remoteEntry.js'): Promise<WorkingLoadResult> {
+  async loadWithFetchEval(remoteUrl: string = 'http://localhost:3001/workflow/remoteEntry.js'): Promise<WorkingLoadResult> {
     console.log('🔧 使用 fetch + eval 載入 Remote（備用方法）')
     
     try {
@@ -165,7 +165,7 @@ export class WorkingRemoteLoader {
   /**
    * 智能載入：嘗試最佳方法
    */
-  async smartLoad(remoteUrl: string = 'http://localhost:3001/remoteEntry.js'): Promise<WorkingLoadResult> {
+  async smartLoad(remoteUrl: string = 'http://localhost:3001/workflow/remoteEntry.js'): Promise<WorkingLoadResult> {
     console.log('🧠 開始智能載入...')
     
     // 方法 1: SystemJS 風格（已驗證有效）
@@ -194,7 +194,7 @@ export class WorkingRemoteLoader {
   /**
    * 載入特定模組 - 多種方法嘗試
    */
-  async loadModule(moduleName: string = './App', remoteUrl: string = 'http://localhost:3001/remoteEntry.js'): Promise<any> {
+  async loadModule(moduleName: string = './App', remoteUrl: string = 'http://localhost:3001/workflow/remoteEntry.js'): Promise<any> {
     console.log(`📦 載入特定模組: ${moduleName}`)
     
     // 如果是 LLM 應用，確保 chunk 攔截器已設置
@@ -1012,7 +1012,7 @@ export class WorkingRemoteLoader {
   /**
    * 只載入容器，不載入特定組件
    */
-  async loadContainerOnly(remoteUrl: string = 'http://localhost:3001/remoteEntry.js'): Promise<WorkingLoadResult> {
+  async loadContainerOnly(remoteUrl: string = 'http://localhost:3001/workflow/remoteEntry.js'): Promise<WorkingLoadResult> {
     console.log('🧠 開始載入容器...')
     
     try {

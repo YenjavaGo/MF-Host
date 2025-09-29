@@ -74,7 +74,7 @@ module.exports = {
       name: 'mf_host',
       filename: 'remoteEntry.js',
       remotes: {
-        'workflow': 'workflow@http://localhost:3001/remoteEntry.js',
+        'workflow': 'workflow@http://localhost:3001/workflow/remoteEntry.js',
         'llm_web': 'llm_web@http://localhost:3003/llm_web/remoteEntry.js'
       },
       shared: {
