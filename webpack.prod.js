@@ -80,7 +80,7 @@ module.exports = {
       shared: {
         vue: { 
           singleton: true, 
-          requiredVersion: '^3.0.0',
+          requiredVersion: '^3.5.21',
           strictVersion: false,
           eager: true  // 生產環境使用 eager loading
         },
