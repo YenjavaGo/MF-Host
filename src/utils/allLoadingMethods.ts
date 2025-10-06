@@ -163,7 +163,7 @@ export class AllLoadingMethods {
       const possiblePaths = [
         'workflow/App',
         'workflow/FlowManager',
-        'workflow/CustomNode',
+        'workflow/WorkflowList',
         'workflow/flowManager'
       ]
       
@@ -288,7 +288,7 @@ export class AllLoadingMethods {
       }
       
       // 嘗試不同的模組路徑
-      const modulePaths = ['./App', './FlowManager', './CustomNode', './main', './index']
+      const modulePaths = ['./App', './FlowManager', './WorkflowList', './main', './index']
       let component = null
       
       for (const modulePath of modulePaths) {

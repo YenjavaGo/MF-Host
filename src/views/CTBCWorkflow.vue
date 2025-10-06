@@ -327,7 +327,7 @@ const remoteAppsConfig = reactive({
   },
   'workflow-list': {
     remoteName: 'workflow',
-    module: './CustomNode'
+    module: './WorkflowList'
   },
   // LLM 相關模組 - 對應 webpack.config.js 中的 'llm_web' remote
   'llm-agent': {
